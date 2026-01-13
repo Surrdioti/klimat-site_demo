@@ -1,20 +1,27 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="pl">
 <head>
 <meta charset="UTF-8">
-<title>Резервация</title>
+<title>Rezerwacja</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
   body {
     font-family: Arial, sans-serif;
     background:#f2f2f2;
     padding:20px;
   }
-  <div id="lang-switch">
-  <button onclick="setLang('pl')">PL</button>
-  <button onclick="setLang('ru')">RU</button>
-  <button onclick="setLang('en')">EN</button>
-</div>
+
+  #lang-switch {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+  }
+  #lang-switch button {
+    margin-left: 5px;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
 
   form {
     max-width:420px;
@@ -23,13 +30,16 @@
     padding:20px;
     border-radius:10px;
   }
+
   h2 { text-align:center; }
+
   input, select, button {
     width:100%;
     padding:10px;
     margin-bottom:12px;
     font-size:16px;
   }
+
   button {
     background:black;
     color:white;
@@ -38,57 +48,118 @@
   }
 </style>
 </head>
+
 <body>
 
-<h2>Резервация</h2>
+<!-- Переключатель языка -->
+<div id="lang-switch">
+  <button onclick="setLang('pl')">PL</button>
+  <button onclick="setLang('ru')">RU</button>
+  <button onclick="setLang('en')">EN</button>
+</div>
+
+<h2 data-i18n="title">Rezerwacja</h2>
 
 <form action="https://formspree.io/f/xvzzoyvd" method="POST">
 
-  <input type="text" name="fullname" placeholder="Имя и фамилия" required>
+  <input type="text" name="fullname" data-i18n-placeholder="fullname" placeholder="Imię i nazwisko" required>
 
-  <input type="tel" name="phone" placeholder="Телефон" required>
+  <input type="tel" name="phone" data-i18n-placeholder="phone" placeholder="Telefon" required>
 
-  <input type="email" name="email" placeholder="Email" required>
+  <input type="email" name="email" data-i18n-placeholder="email" placeholder="Email" required>
 
-  <select name="people" required>
-    <option value="">Количество людей</option>
+  <select name="people" data-i18n-select="people" required>
+    <option value="">Liczba osób</option>
     <option>1</option><option>2</option><option>3</option><option>4</option>
     <option>5</option><option>6</option><option>7</option><option>8</option>
     <option>9</option><option>10</option>
   </select>
 
-  <select name="duration" required>
-    <option value="">Продолжительность</option>
-    <option value="1">1 час</option>
-    <option value="1.5">1.5 часа</option>
-    <option value="2">2 часа</option>
+  <select name="duration" data-i18n-select="duration" required>
+    <option value="">Czas trwania</option>
+    <option value="1">1 godzina</option>
+    <option value="1.5">1.5 godziny</option>
+    <option value="2">2 godziny</option>
   </select>
 
   <select name="time" required>
-    <option value="">Время начала</option>
+    <option value="" data-i18n="time">Godzina rozpoczęcia</option>
   </select>
 
-  <button type="submit">Забронировать</button>
+  <button type="submit" data-i18n="submit">Zarezerwuj</button>
 </form>
 
 <script>
-  const timeSelect = document.querySelector('select[name="time"]');
+/* Генерация времени */
+const timeSelect = document.querySelector('select[name="time"]');
+let startHour = 16;
+let endHour = 22;
+let minutes = [0, 15, 30, 45];
 
-  let startHour = 16;
-  let endHour = 22;
-  let minutes = [0, 15, 30, 45];
-
-  for (let h = startHour; h <= endHour; h++) {
-    for (let m of minutes) {
-      if (h === 22 && m > 30) continue;
-      let hh = h.toString().padStart(2, '0');
-      let mm = m.toString().padStart(2, '0');
-      let option = document.createElement("option");
-      option.value = `${hh}:${mm}`;
-      option.textContent = `${hh}:${mm}`;
-      timeSelect.appendChild(option);
-    }
+for (let h = startHour; h <= endHour; h++) {
+  for (let m of minutes) {
+    if (h === 22 && m > 30) continue;
+    let hh = h.toString().padStart(2, '0');
+    let mm = m.toString().padStart(2, '0');
+    let option = document.createElement("option");
+    option.value = `${hh}:${mm}`;
+    option.textContent = `${hh}:${mm}`;
+    timeSelect.appendChild(option);
   }
+}
+
+/* Переводы */
+const translations = {
+  pl: {
+    title: "Rezerwacja",
+    fullname: "Imię i nazwisko",
+    phone: "Telefon",
+    email: "Email",
+    people: "Liczba osób",
+    duration: "Czas trwania",
+    time: "Godzina rozpoczęcia",
+    submit: "Zarezerwuj"
+  },
+  ru: {
+    title: "Резервация",
+    fullname: "Имя и фамилия",
+    phone: "Телефон",
+    email: "Почта",
+    people: "Количество людей",
+    duration: "Продолжительность",
+    time: "Время начала",
+    submit: "Забронировать"
+  },
+  en: {
+    title: "Reservation",
+    fullname: "Full name",
+    phone: "Phone",
+    email: "Email",
+    people: "Number of people",
+    duration: "Duration",
+    time: "Start time",
+    submit: "Reserve"
+  }
+};
+
+function setLang(lang) {
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    el.textContent = translations[lang][el.dataset.i18n];
+  });
+
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+    el.placeholder = translations[lang][el.dataset.i18nPlaceholder];
+  });
+
+  document.querySelectorAll("[data-i18n-select]").forEach(el => {
+    el.options[0].text = translations[lang][el.dataset.i18nSelect];
+  });
+
+  document.documentElement.lang = lang;
+}
+
+// язык по умолчанию
+setLang('pl');
 </script>
 
 </body>

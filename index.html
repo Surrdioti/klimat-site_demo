@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Резервация</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background:#f2f2f2;
+    padding:20px;
+  }
+  form {
+    max-width:420px;
+    margin:auto;
+    background:#fff;
+    padding:20px;
+    border-radius:10px;
+  }
+  h2 { text-align:center; }
+  input, select, button {
+    width:100%;
+    padding:10px;
+    margin-bottom:12px;
+    font-size:16px;
+  }
+  button {
+    background:black;
+    color:white;
+    border:none;
+    cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<h2>Резервация</h2>
+
+<form action="https://formspree.io/f/xvzzoyvd" method="POST">
+
+  <input type="text" name="fullname" placeholder="Имя и фамилия" required>
+
+  <input type="tel" name="phone" placeholder="Телефон" required>
+
+  <input type="email" name="email" placeholder="Email" required>
+
+  <select name="people" required>
+    <option value="">Количество людей</option>
+    <option>1</option><option>2</option><option>3</option><option>4</option>
+    <option>5</option><option>6</option><option>7</option><option>8</option>
+    <option>9</option><option>10</option>
+  </select>
+
+  <select name="duration" required>
+    <option value="">Продолжительность</option>
+    <option value="1">1 час</option>
+    <option value="1.5">1.5 часа</option>
+    <option value="2">2 часа</option>
+  </select>
+
+  <select name="time" required>
+    <option value="">Время начала</option>
+  </select>
+
+  <button type="submit">Забронировать</button>
+</form>
+
+<script>
+  const timeSelect = document.querySelector('select[name="time"]');
+
+  let startHour = 16;
+  let endHour = 22;
+  let minutes = [0, 15, 30, 45];
+
+  for (let h = startHour; h <= endHour; h++) {
+    for (let m of minutes) {
+      if (h === 22 && m > 30) continue;
+      let hh = h.toString().padStart(2, '0');
+      let mm = m.toString().padStart(2, '0');
+      let option = document.createElement("option");
+      option.value = `${hh}:${mm}`;
+      option.textContent = `${hh}:${mm}`;
+      timeSelect.appendChild(option);
+    }
+  }
+</script>
+
+</body>
+</html>
